@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.Tasks;
 using GW2_Addon_Manager.App.Configuration;
 using GW2_Addon_Manager.App.Configuration.Model;
+using System.Collections.Generic;
 
 namespace GW2_Addon_Manager
 {
@@ -287,6 +288,8 @@ namespace GW2_Addon_Manager
                         Path.Combine("Disabled Plugins", addon_info.folder_name),
                         Path.Combine(Path.Combine(_configurationManager.UserConfig.GamePath, "addons"), addon_info.folder_name)
                         );
+                        addonConfiguration.Disabled = false;
+                        _configurationManager.SaveConfiguration();
                     }
                     else
                     {
@@ -322,11 +325,24 @@ namespace GW2_Addon_Manager
                             }
                         }
 
-
                     }
-
-                    addonConfiguration.Disabled = false;
-                    _configurationManager.SaveConfiguration();
+                    if(addonConfiguration.Name.Contains("arcdps"))
+                    {
+                        List<AddonData> listOfAddons = _configurationManager.UserConfig.AddonsList.Where(a => a.Name.Contains("arcdps")).ToList();
+                        if (listOfAddons.Count > 1)
+                        {
+                            foreach (AddonData addon in listOfAddons)
+                            {
+                                addon.Disabled = false;
+                                _configurationManager.SaveConfiguration();
+                            }
+                        }
+                        else
+                        {
+                            addonConfiguration.Disabled = false;
+                            _configurationManager.SaveConfiguration();
+                        }
+                    }
                 }
             }
         }
